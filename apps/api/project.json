@@ -62,9 +62,15 @@
       }
     },
     "test": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{workspaceRoot}/coverage/apps/api"],
       "options": {
+        "configFile": "apps/api/vite.config.ts",
         "passWithNoTests": true
       }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
     },
     "docker:build": {
       "dependsOn": ["build"]

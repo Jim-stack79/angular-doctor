@@ -4,6 +4,27 @@
   "sourceRoot": "libs/rules/src",
   "projectType": "library",
   "tags": [],
-  "// targets": "to see all targets run: nx show project rules --web",
-  "targets": {}
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/rules",
+        "main": "libs/rules/src/index.ts",
+        "tsConfig": "libs/rules/tsconfig.lib.json",
+        "assets": ["libs/rules/*.md"]
+      }
+    },
+    "test": {
+      "executor": "@nx/vitest:test",
+      "outputs": ["{workspaceRoot}/coverage/libs/rules"],
+      "options": {
+        "configFile": "libs/rules/vitest.config.mts",
+        "passWithNoTests": true
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    }
+  }
 }

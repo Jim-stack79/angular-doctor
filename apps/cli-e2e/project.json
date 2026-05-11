@@ -4,6 +4,22 @@
   "projectType": "application",
   "implicitDependencies": ["cli"],
   "targets": {
+    "build": {
+      "executor": "nx:noop",
+      "dependsOn": ["cli:build"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/apps/cli-e2e"],
+      "options": {
+        "jestConfig": "apps/cli-e2e/jest.config.cts",
+        "passWithNoTests": true
+      },
+      "dependsOn": ["cli:build", "cli:serve"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint"
+    },
     "e2e": {
       "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{e2eProjectRoot}"],
