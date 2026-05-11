@@ -1,0 +1,9 @@
+{
+  "name": "analyzer",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/analyzer/src",
+  "projectType": "library",
+  "tags": [],
+  "// targets": "to see all targets run: nx show project analyzer --web",
+  "targets": {}
+}

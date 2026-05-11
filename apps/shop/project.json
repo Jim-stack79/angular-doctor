@@ -52,7 +52,7 @@
       "defaultConfiguration": "production"
     },
     "serve": {
-      "dependsOn": ["api:serve"],
+      "dependsOn": [],
       "continuous": true,
       "executor": "@angular/build:dev-server",
       "configurations": {
