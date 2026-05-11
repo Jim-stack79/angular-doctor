@@ -45,6 +45,9 @@ Thumbs.db
 
 .angular
 .claude
+.codex
+.gemini
+.opencode
 .playwright-mcp
 
 vite.config.*.timestamp*
