@@ -1,0 +1,9 @@
+{
+    "explorer.excludeGitIgnore": true,
+    "files.exclude": {
+      "**/.agents": true,
+      "**/.codex": true,
+      "**/.gemini": true,
+      "**/.opencode": true
+    }
+  }
