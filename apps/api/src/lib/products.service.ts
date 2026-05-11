@@ -5,11 +5,11 @@ export class ProductsService {
 
   private generateMockProducts(): Product[] {
     const categories = ['Electronics', 'Clothing', 'Books', 'Home & Garden', 'Sports'];
-    const products: Product[] = [];
+    const items: Product[] = [];
 
     for (let i = 1; i <= 50; i++) {
       const category = categories[Math.floor(Math.random() * categories.length)];
-      products.push({
+      items.push({
         id: `prod-${i}`,
         name: `Product ${i}`,
         description: `This is a high-quality ${category.toLowerCase()} product with excellent features and great value for money.`,
@@ -22,7 +22,7 @@ export class ProductsService {
       });
     }
 
-    return products;
+    return items;
   }
 
   getAllProducts(
@@ -34,27 +34,21 @@ export class ProductsService {
 
     if (filter) {
       if (filter.category) {
-        filteredProducts = filteredProducts.filter(
-          p => p.category === filter.category
-        );
+        filteredProducts = filteredProducts.filter(p => p.category === filter.category);
       }
 
       if (filter.minPrice !== undefined) {
-        filteredProducts = filteredProducts.filter(
-          p => p.price >= filter.minPrice
-        );
+        const minPrice = filter.minPrice;
+        filteredProducts = filteredProducts.filter(p => p.price >= minPrice);
       }
 
       if (filter.maxPrice !== undefined) {
-        filteredProducts = filteredProducts.filter(
-          p => p.price <= filter.maxPrice
-        );
+        const maxPrice = filter.maxPrice;
+        filteredProducts = filteredProducts.filter(p => p.price <= maxPrice);
       }
 
       if (filter.inStock !== undefined) {
-        filteredProducts = filteredProducts.filter(
-          p => p.inStock === filter.inStock
-        );
+        filteredProducts = filteredProducts.filter(p => p.inStock === filter.inStock);
       }
 
       if (filter.searchTerm) {

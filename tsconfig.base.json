@@ -1,6 +1,12 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
+    "strict": true,
+    "noImplicitOverride": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "forceConsistentCasingInFileNames": true,
     "rootDir": ".",
     "sourceMap": true,
     "declaration": false,
@@ -15,14 +21,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@org/api/products": ["libs/api/products/src/index.ts"],
       "@org/models": ["libs/shared/models/src/index.ts"],
-      "@org/shop/data": ["libs/shop/data/src/index.ts"],
-      "@org/shop/feature-product-detail": [
-        "libs/shop/feature-product-detail/src/index.ts"
-      ],
-      "@org/shop/feature-products": ["libs/shop/feature-products/src/index.ts"],
-      "@org/shop/shared-ui": ["libs/shop/shared-ui/src/index.ts"],
       "@myorg/analyzer": ["./libs/analyzer/src/index.ts"],
       "@myorg/rules": ["./libs/rules/src/index.ts"]
     }

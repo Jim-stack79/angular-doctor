@@ -1,9 +1,9 @@
 import express from 'express';
-import { ProductsService } from '@org/api/products';
+import { ProductsService } from './lib/products.service';
 import { ApiResponse, Product, ProductFilter, PaginatedResponse } from '@org/models';
 
-const host = process.env.HOST ?? 'localhost';
-const port = process.env.PORT ? Number(process.env.PORT) : 3333;
+const host = process.env['HOST'] ?? 'localhost';
+const port = process.env['PORT'] ? Number(process.env['PORT']) : 3333;
 
 const app = express();
 const productsService = new ProductsService();
@@ -32,24 +32,24 @@ app.get('/api/products', (req, res) => {
   try {
     const filter: ProductFilter = {};
 
-    if (req.query.category) {
-      filter.category = req.query.category as string;
+    if (req.query['category']) {
+      filter.category = req.query['category'] as string;
     }
-    if (req.query.minPrice) {
-      filter.minPrice = Number(req.query.minPrice);
+    if (req.query['minPrice']) {
+      filter.minPrice = Number(req.query['minPrice']);
     }
-    if (req.query.maxPrice) {
-      filter.maxPrice = Number(req.query.maxPrice);
+    if (req.query['maxPrice']) {
+      filter.maxPrice = Number(req.query['maxPrice']);
     }
-    if (req.query.inStock !== undefined) {
-      filter.inStock = req.query.inStock === 'true';
+    if (req.query['inStock'] !== undefined) {
+      filter.inStock = req.query['inStock'] === 'true';
     }
-    if (req.query.searchTerm) {
-      filter.searchTerm = req.query.searchTerm as string;
+    if (req.query['searchTerm']) {
+      filter.searchTerm = req.query['searchTerm'] as string;
     }
 
-    const page = req.query.page ? Number(req.query.page) : 1;
-    const pageSize = req.query.pageSize ? Number(req.query.pageSize) : 12;
+    const page = req.query['page'] ? Number(req.query['page']) : 1;
+    const pageSize = req.query['pageSize'] ? Number(req.query['pageSize']) : 12;
 
     const result = productsService.getAllProducts(filter, page, pageSize);
 
@@ -58,20 +58,20 @@ app.get('/api/products', (req, res) => {
       success: true,
     };
 
-    res.json(response);
+    return res.json(response);
   } catch (error) {
     const response: ApiResponse<null> = {
       data: null,
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
     };
-    res.status(500).json(response);
+    return res.status(500).json(response);
   }
 });
 
 app.get('/api/products/:id', (req, res) => {
   try {
-    const product = productsService.getProductById(req.params.id);
+    const product = productsService.getProductById(req.params['id'] as string);
 
     if (!product) {
       const response: ApiResponse<null> = {
@@ -87,50 +87,50 @@ app.get('/api/products/:id', (req, res) => {
       success: true,
     };
 
-    res.json(response);
+    return res.json(response);
   } catch (error) {
     const response: ApiResponse<null> = {
       data: null,
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
     };
-    res.status(500).json(response);
+    return res.status(500).json(response);
   }
 });
 
-app.get('/api/products-metadata/categories', (req, res) => {
+app.get('/api/products-metadata/categories', (_req, res) => {
   try {
     const categories = productsService.getCategories();
     const response: ApiResponse<string[]> = {
       data: categories,
       success: true,
     };
-    res.json(response);
+    return res.json(response);
   } catch (error) {
     const response: ApiResponse<null> = {
       data: null,
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
     };
-    res.status(500).json(response);
+    return res.status(500).json(response);
   }
 });
 
-app.get('/api/products-metadata/price-range', (req, res) => {
+app.get('/api/products-metadata/price-range', (_req, res) => {
   try {
     const priceRange = productsService.getPriceRange();
     const response: ApiResponse<{ min: number; max: number }> = {
       data: priceRange,
       success: true,
     };
-    res.json(response);
+    return res.json(response);
   } catch (error) {
     const response: ApiResponse<null> = {
       data: null,
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',
     };
-    res.status(500).json(response);
+    return res.status(500).json(response);
   }
 });
 
