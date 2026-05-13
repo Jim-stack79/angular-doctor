@@ -1,23 +1,14 @@
-import Fastify from 'fastify';
-import { app } from './app/app';
+#!/usr/bin/env node
+import { Command } from 'commander';
+import { registerAnalyzeCommand } from './app/commands/analyze';
 
-const host = process.env['HOST'] ?? 'localhost';
-const port = process.env['PORT'] ? Number(process.env['PORT']) : 3000;
+const program = new Command();
 
-// Instantiate Fastify with some config
-const server = Fastify({
-  logger: true,
-});
+program
+  .name('angular-doctor')
+  .description('Analyzes Angular projects for performance, architecture and bad practices')
+  .version('0.1.0');
 
-// Register your application as a normal plugin.
-server.register(app);
+registerAnalyzeCommand(program);
 
-// Start listening.
-server.listen({ port, host }, (err) => {
-  if (err) {
-    server.log.error(err);
-    process.exit(1);
-  } else {
-    console.log(`[ ready ] http://${host}:${port}`);
-  }
-});
+program.parse(process.argv);
