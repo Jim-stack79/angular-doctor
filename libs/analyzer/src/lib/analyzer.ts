@@ -6,10 +6,14 @@ import { missingLazyLoadingRule } from './rules/missing-lazy-loading.rule';
 import { noCircularDepsRule } from './rules/no-circular-deps.rule';
 import { highCyclomaticComplexityRule } from './rules/high-cyclomatic-complexity.rule';
 import { rxjsUnsubscribeRule } from './rules/rxjs-unsubscribe.rule';
+import { rxjsNestedSubscribeRule } from './rules/rxjs-nested-subscribe.rule';
+import { largeBundleImportRule } from './rules/large-bundle-import.rule';
 
 const RULES: Rule[] = [
   noCircularDepsRule,
   rxjsUnsubscribeRule,
+  rxjsNestedSubscribeRule,
+  largeBundleImportRule,
   missingOnPushRule,
   missingLazyLoadingRule,
   highCyclomaticComplexityRule,
