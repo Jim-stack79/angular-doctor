@@ -1,7 +1,10 @@
-import { analyzer } from './analyzer';
+import { describe, it, expect } from 'vitest';
+import { analyzeProject } from './analyzer';
 
-describe('analyzer', () => {
-  it('should work', () => {
-    expect(analyzer()).toEqual('analyzer');
+describe('analyzeProject', () => {
+  it('should throw if the project path has no tsconfig.json', async () => {
+    await expect(analyzeProject('/nonexistent/path')).rejects.toThrow(
+      'No tsconfig.json found at /nonexistent/path'
+    );
   });
 });
