@@ -76,11 +76,21 @@ El motor analiza proyectos Angular aplicando las siguientes reglas:
 |----|-------------|-----------|
 | `no-circular-deps` | Detecta dependencias circulares entre módulos | 🔴 Alta |
 | `rxjs-unsubscribe` | Detecta subscripciones a Observables sin `ngOnDestroy` | 🔴 Alta |
+| `rxjs-nested-subscribe` | Detecta `.subscribe()` anidado dentro de otro `.subscribe()` | 🔴 Alta |
 | `missing-onpush` | Detecta componentes sin `ChangeDetectionStrategy.OnPush` | 🟡 Media |
 | `missing-lazy-loading` | Detecta rutas que deberían usar lazy loading y no lo hacen | 🟡 Media |
 | `high-cyclomatic-complexity` | Detecta métodos con complejidad ciclomática superior a 10 | 🟡 Media |
+| `large-bundle-import` | Detecta imports de librerías pesadas completas | 🟡 Media |
 
 Cada problema detectado incluye descripción, impacto en rendimiento o mantenibilidad, y sugerencia concreta de resolución.
+
+## Otras métricas interesantes, pero para v2:
+
+`missing-trackby` — usar *ngFor sin trackBy en listas grandes destroza el rendimiento
+`large-component` — componentes con demasiadas líneas (god components)
+`direct-dom-manipulation` — usar document.querySelector o ElementRef.nativeElement directamente en vez de el renderer de Angular
+`any-type-usage` — abuso de any en TypeScript, que anula el tipado fuerte
+`console-log-in-production` — console.log olvidados en código de producción
 
 ---
 
