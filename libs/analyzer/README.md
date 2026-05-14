@@ -13,8 +13,8 @@ Herramienta de análisis estático para proyectos Angular. Detecta problemas de 
 | 0 | Entorno base | ✅ Completa |
 | 1 | Estructura del monorepo | ✅ Completa |
 | 2 | Motor de análisis + Tests | ✅ Completa |
-| 3 | Capa de IA | 🔜 Pendiente |
-| 4 | CLI | 🔜 Pendiente |
+| 3 | Capa de IA | 🔜 Pendiente | ✅ Completa |
+| 4 | CLI | 🔜 Pendiente | ✅ Completa |
 | 5 | Backend SaaS | 🔜 Pendiente |
 | 6 | Frontend (dashboard web) | 🔜 Pendiente |
 | 7 | IA en la UI | 🔜 Pendiente |
@@ -119,3 +119,28 @@ El motor de análisis (`libs/analyzer`) sigue este flujo:
 5. Devuelve un `AnalysisResult` con todos los problemas detectados
 
 El análisis trabaja sobre el AST (Árbol de Sintaxis Abstracta), no sobre texto plano, lo que lo hace preciso y resistente a falsos positivos.
+
+---
+
+## Cómo funciona la capa de IA
+
+La capa de IA es opcional y se activa con el flag `--ai`. Todo corre en local con Ollama — ningún dato sale a internet.
+
+**El flujo completo:**
+
+1. El motor detecta un problema y genera un `Issue` con `ruleId`, `message`, `impact`, `suggestion`, etc.
+2. La CLI pasa ese `Issue` a `explainIssue()` en `ai.service.ts`
+3. `explainIssue()` construye un prompt con toda la información del problema y se lo envía a Ollama via HTTP a `localhost:11434`
+4. Ollama carga el modelo `llama3.2` localmente y genera la respuesta en JSON
+5. Zod valida que el JSON tiene la estructura esperada (`summary`, `whyItMatters`, `howToFix`, `codeExample`). Si el modelo devuelve algo inesperado, Zod lo rechaza y devuelve `null` — el análisis no se rompe
+
+**¿Por qué las explicaciones son diferentes para cada problema?**
+
+Porque el prompt cambia con cada `Issue`. Para `rxjs-unsubscribe` el modelo recibe un contexto completamente distinto que para `missing-onpush`. El modelo genera texto nuevo cada vez basándose en ese contexto — no tiene respuestas predefinidas.
+
+**Requisitos para usar `--ai`:**
+- Tener [Ollama](https://ollama.com) instalado
+- Haber descargado el modelo: `ollama pull llama3.2`
+- Ollama corriendo en segundo plano (se inicia automáticamente al instalar la app en macOS)
+
+----
