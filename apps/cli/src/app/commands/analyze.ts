@@ -1,15 +1,18 @@
 import { Command } from 'commander';
-import chalk, { type ChalkInstance } from 'chalk';import ora from 'ora';
+import chalk, { type ChalkInstance } from 'chalk';
+import ora from 'ora';
 import { resolve } from 'path';
-import { analyzeProject } from '@myorg/analyzer';
-import type { Issue } from '@myorg/analyzer';
+
+import { analyzeProject, explainIssue } from '@myorg/analyzer';
+import type { Issue, IssueWithAI } from '@myorg/analyzer';
 
 export function registerAnalyzeCommand(program: Command): void {
   program
     .command('analyze <projectPath>')
     .description('Analyze an Angular project and report issues')
     .option('--json', 'Output results as JSON')
-    .action(async (projectPath: string, options: { json?: boolean }) => {
+    .option('--ai', 'Enrich results with AI explanations (requires Ollama running locally)')
+    .action(async (projectPath: string, options: { json?: boolean; ai?: boolean }) => {
       const absolutePath = resolve(projectPath);
       const spinner = ora(`Analyzing ${absolutePath}...`).start();
 
@@ -17,12 +20,25 @@ export function registerAnalyzeCommand(program: Command): void {
         const result = await analyzeProject(absolutePath);
         spinner.succeed(`Analysis complete — ${result.issues.length} issues found`);
 
+        let issues: IssueWithAI[] = result.issues;
+
+        if (options.ai && result.issues.length > 0) {
+          const aiSpinner = ora('Enriching results with AI explanations...').start();
+          issues = await Promise.all(
+            result.issues.map(async (issue) => ({
+              ...issue,
+              aiExplanation: await explainIssue(issue) ?? undefined,
+            }))
+          );
+          aiSpinner.succeed('AI explanations ready');
+        }
+
         if (options.json) {
-          console.log(JSON.stringify(result, null, 2));
+          console.log(JSON.stringify({ ...result, issues }, null, 2));
           return;
         }
 
-        printReport(result.issues, absolutePath);
+        printReport(issues, absolutePath);
       } catch (err) {
         spinner.fail('Analysis failed');
         console.error(chalk.red((err as Error).message));
@@ -31,7 +47,7 @@ export function registerAnalyzeCommand(program: Command): void {
     });
 }
 
-function printReport(issues: Issue[], projectPath: string): void {
+function printReport(issues: IssueWithAI[], projectPath: string): void {
   console.log('\n' + chalk.bold('Angular Doctor — Analysis Report'));
   console.log(chalk.dim(projectPath));
   console.log(chalk.dim('─'.repeat(60)) + '\n');
@@ -69,10 +85,21 @@ function printReport(issues: Issue[], projectPath: string): void {
   );
 }
 
-function printIssue(issue: Issue, color: ChalkInstance): void {
-    console.log(color(`  [${issue.ruleId}] ${issue.message}`));
+function printIssue(issue: IssueWithAI, color: ChalkInstance): void {
+  console.log(color(`  [${issue.ruleId}] ${issue.message}`));
   console.log(chalk.dim(`  File: ${issue.filePath}${issue.line ? `:${issue.line}` : ''}`));
   console.log(chalk.dim(`  Impact: ${issue.impact}`));
   console.log(chalk.dim(`  Fix: ${issue.suggestion}`));
+
+  if (issue.aiExplanation) {
+    console.log(chalk.cyan(`\n  🤖 AI Explanation:`));
+    console.log(chalk.cyan(`  ${issue.aiExplanation.summary}`));
+    console.log(chalk.cyan(`\n  Why it matters: ${issue.aiExplanation.whyItMatters}`));
+    console.log(chalk.cyan(`\n  How to fix: ${issue.aiExplanation.howToFix}`));
+    if (issue.aiExplanation.codeExample) {
+      console.log(chalk.cyan(`\n  Example:\n  ${issue.aiExplanation.codeExample}`));
+    }
+  }
+
   console.log();
 }

@@ -21,3 +21,18 @@ export interface AnalysisResult {
     low: number;
   };
 }
+
+export interface AIExplanation {
+  summary: string;
+  whyItMatters: string;
+  howToFix: string;
+  codeExample?: string;
+}
+
+export interface IssueWithAI extends Issue {
+  aiExplanation?: AIExplanation;
+}
+
+export interface AnalysisResultWithAI extends Omit<AnalysisResult, 'issues'> {
+  issues: IssueWithAI[];
+}
