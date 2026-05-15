@@ -38,6 +38,9 @@ importers:
       '@fastify/autoload':
         specifier: ~6.0.3
         version: 6.0.3
+      '@fastify/cors':
+        specifier: ^11.2.0
+        version: 11.2.0
       '@fastify/sensible':
         specifier: ~6.0.2
         version: 6.0.4
@@ -1618,6 +1621,9 @@ packages:
 
   '@fastify/autoload@6.0.3':
     resolution: {integrity: sha512-/wM2pmI7jP2fGah3YuP14i9vuaijpD4gQYLiyd+eD7gUxpA3B4R6/0QIXQS2eJaYD9aIX4ZFRzPmrZsaetfcWw==}
+
+  '@fastify/cors@11.2.0':
+    resolution: {integrity: sha512-LbLHBuSAdGdSFZYTLVA3+Ch2t+sA6nq3Ejc6XLAKiQ6ViS2qFnvicpj0htsx03FyYeLs04HfRNBsz/a8SvbcUw==}
 
   '@fastify/error@4.2.0':
     resolution: {integrity: sha512-RSo3sVDXfHskiBZKBPRgnQTtIqpi/7zhJOEmAxCiBcM7d0uwdGdxLlsCaLzGs8v8NnxIRlfG0N51p5yFaOentQ==}
@@ -10106,6 +10112,11 @@ snapshots:
       fast-uri: 3.1.2
 
   '@fastify/autoload@6.0.3': {}
+
+  '@fastify/cors@11.2.0':
+    dependencies:
+      fastify-plugin: 5.0.1
+      toad-cache: 3.7.0
 
   '@fastify/error@4.2.0': {}
 

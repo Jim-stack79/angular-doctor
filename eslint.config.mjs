@@ -26,7 +26,7 @@ export default [
             },
             {
               sourceTag: 'scope:api',
-              onlyDependOnLibsWithTags: ['scope:api', 'scope:shared'],
+              onlyDependOnLibsWithTags: ['scope:api', 'scope:shared', 'scope:analyzer'],
             },
             {
               sourceTag: 'scope:cli',
