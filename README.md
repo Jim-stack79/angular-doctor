@@ -1,282 +1,230 @@
-# Nx Angular Repository
+# Angular Doctor
 
+Herramienta de análisis estático para proyectos Angular. Detecta problemas de rendimiento, arquitectura y malas prácticas de forma automática y los explica con ayuda de IA.
 
+> Angular Doctor detecta y explica. No modifica código.
 
-✨ A repository showcasing key [Nx](https://nx.dev) features for Angular monorepos ✨
-🚀 If you haven't connected to Nx Cloud yet, [complete your setup here](https://cloud.nx.app/setup/connect-workspace/guide). Get faster builds with remote caching, distributed task execution, and self-healing CI. [See how your workspace can benefit](#nx-cloud).
+---
 
-## 📦 Project Overview
+## Estado actual
 
-This repository demonstrates a production-ready Angular monorepo with:
+| Fase | Descripción | Estado |
+|------|-------------|--------|
+| 0 | Entorno base | ✅ Completa |
+| 1 | Estructura del monorepo | ✅ Completa |
+| 2 | Motor de análisis + Tests | ✅ Completa |
+| 3 | Capa de IA | ✅ Completa |
+| 4 | CLI | ✅ Completa |
+| 5 | Backend SaaS | ✅ Completa |
+| 6 | Frontend (dashboard web) | ✅ Completa |
+| 7 | IA en la UI | 🔜 Pendiente |
+| 8 | CI/CD | 🔜 Pendiente |
+| 9 | Deploy | 🔜 Pendiente |
+| 10 | Observabilidad | 🔜 Pendiente |
+| 11 | Documentación y demo | 🔜 Pendiente |
 
-- **2 Applications**
-  - `shop` - Angular e-commerce application with product listings and detail views
-  - `api` - Backend API with Docker support serving product data
-- **6 Libraries**
-  - `@org/feature-products` - Product listing feature (Angular)
-  - `@org/feature-product-detail` - Product detail feature (Angular)
-  - `@org/data` - Data access layer for shop features
-  - `@org/shared-ui` - Shared UI components
-  - `@org/models` - Shared data models
-  - `@org/products` - API product service library
-- **E2E Testing**
-  - `shop-e2e` - Playwright tests for the shop application
+---
 
-## 🚀 Quick Start
-
-```bash
-# Clone the repository
-git clone <your-fork-url>
-cd <your-repository-name>
-
-# Install dependencies
-# (Note: You may need --legacy-peer-deps)
-npm install
-
-# Serve the Angular shop application (this will simultaneously serve the API backend)
-npx nx serve shop
-
-# ...or you can serve the API separately
-npx nx serve api
-
-# Build all projects
-npx nx run-many -t build
-
-# Run tests
-npx nx run-many -t test
-
-# Lint all projects
-npx nx run-many -t lint
-
-# Run e2e tests
-npx nx e2e shop-e2e
-
-# Run tasks in parallel
-
-npx nx run-many -t lint test build e2e --parallel=3
-
-# Visualize the project graph
-npx nx graph
-```
-
-## ⭐ Featured Nx Capabilities
-
-This repository showcases several powerful Nx features:
-
-### 1. 🔒 Module Boundaries
-
-Enforces architectural constraints using tags. Each project has specific dependencies it can use:
-
-- `scope:shared` - Can be used by all projects
-- `scope:shop` - Shop-specific libraries
-- `scope:api` - API-specific libraries
-- `type:feature` - Feature libraries
-- `type:data` - Data access libraries
-- `type:ui` - UI component libraries
-
-**Try it out:**
-
-```bash
-# See the current project graph and boundaries
-npx nx graph
-
-# View a specific project's details
-npx nx show project shop --web
-```
-
-[Learn more about module boundaries →](https://nx.dev/features/enforce-module-boundaries)
-
-### 2. 🐳 Docker Integration
-
-The API project includes Docker support with automated targets and release management:
-
-```bash
-# Build Docker image
-npx nx docker:build api
-
-# Run Docker container
-npx nx docker:run api
-
-# Release with automatic Docker image versioning
-npx nx release
-```
-
-**Nx Release for Docker:** The repository is configured to use Nx Release for managing Docker image versioning and publishing. When running `nx release`, Docker images for the API project are automatically versioned and published based on the release configuration in `nx.json`. This integrates seamlessly with semantic versioning and changelog generation.
-
-[Learn more about Docker integration →](https://nx.dev/recipes/nx-release/release-docker-images)
-
-### 3. 🎭 Playwright E2E Testing
-
-End-to-end testing with Playwright is pre-configured:
-
-```bash
-# Run e2e tests
-npx nx e2e shop-e2e
-
-# Run e2e tests in CI mode
-npx nx e2e-ci shop-e2e
-```
-
-[Learn more about E2E testing →](https://nx.dev/technologies/test-tools/playwright/introduction#e2e-testing)
-
-### 4. ⚡ Vitest for Unit Testing
-
-Fast unit testing with Vite for Angular libraries:
-
-```bash
-# Test a specific library
-npx nx test data
-
-# Test all projects
-npx nx run-many -t test
-```
-
-[Learn more about Vite testing →](https://nx.dev/recipes/vite)
-
-### 5. 🔧 Self-Healing CI
-
-The CI pipeline includes `nx fix-ci` which automatically identifies and suggests fixes for common issues:
-
-```bash
-# In CI, this command provides automated fixes
-npx nx fix-ci
-```
-
-This feature helps maintain a healthy CI pipeline by automatically detecting and suggesting solutions for:
-
-- Missing dependencies
-- Incorrect task configurations
-- Cache invalidation issues
-- Common build failures
-
-[Learn more about self-healing CI →](https://nx.dev/ci/features/self-healing-ci)
-
-## 📁 Project Structure
+## Estructura del monorepo
 
 ```
+angular-doctor/
 ├── apps/
-│   ├── shop/           [scope:shop]    - Angular e-commerce app
-│   ├── shop-e2e/                       - E2E tests for shop
-│   └── api/            [scope:api]     - Backend API with Docker
-├── libs/
-│   ├── shop/
-│   │   ├── feature-products/        [scope:shop,type:feature] - Product listing
-│   │   ├── feature-product-detail/  [scope:shop,type:feature] - Product details
-│   │   ├── data/                    [scope:shop,type:data]    - Data access
-│   │   └── shared-ui/               [scope:shop,type:ui]      - UI components
-│   ├── api/
-│   │   └── products/    [scope:api]    - Product service
-│   └── shared/
-│       └── models/      [scope:shared,type:data] - Shared models
-├── nx.json             - Nx configuration
-├── tsconfig.json       - TypeScript configuration
-└── eslint.config.mjs   - ESLint with module boundary rules
+│   ├── cli/          # Interfaz de línea de comandos
+│   └── web/          # Dashboard web (Angular)
+└── libs/
+    ├── analyzer/     # Motor de análisis — núcleo del proyecto
+    ├── rules/        # Sistema de reglas (futuro paquete independiente)
+    └── shared/       # Tipos y utilidades compartidas
 ```
 
-## 🏷️ Understanding Tags
+---
 
-This repository uses tags to enforce module boundaries:
+## Cómo arrancar
 
+**Requisitos**
 
-| Project            | Tags                         | Can Import From              |
-| ------------------ | ---------------------------- | ---------------------------- |
-| `shop`             | `scope:shop`                 | `scope:shop`, `scope:shared` |
-| `api`              | `scope:api`                  | `scope:api`, `scope:shared`  |
-| `feature-products` | `scope:shop`, `type:feature` | `scope:shop`, `scope:shared` |
-| `data`             | `scope:shop`, `type:data`    | `scope:shared`               |
-| `models`           | `scope:shared`, `type:data`  | Nothing (base library)       |
+- Node.js LTS (>=20)
+- pnpm (>=11)
 
-
-## 📚 Useful Commands
+**Instalación**
 
 ```bash
-# Project exploration
-npx nx graph                                    # Interactive dependency graph
-npx nx list                                     # List installed plugins
-npx nx show project shop --web                 # View project details
-
-# Development
-npx nx serve shop                              # Serve Angular app
-npx nx serve api                               # Serve backend API
-npx nx build shop                              # Build Angular app
-npx nx test data                               # Test a specific library
-npx nx lint feature-products                   # Lint a specific library
-
-# Running multiple tasks
-npx nx run-many -t build                       # Build all projects
-npx nx run-many -t test --parallel=3          # Test in parallel
-npx nx run-many -t lint test build            # Run multiple targets
-
-# Affected commands (great for CI)
-npx nx affected -t build                       # Build only affected projects
-npx nx affected -t test                        # Test only affected projects
-
-# Docker operations
-npx nx docker:build api                        # Build Docker image
-npx nx docker:run api                          # Run Docker container
+git clone https://github.com/tu-usuario/angular-doctor.git
+cd angular-doctor
+pnpm install
+pnpm approve-builds
 ```
 
-## 🎯 Adding New Features
-
-### Generate a new Angular application:
+**Ejecutar los tests**
 
 ```bash
-npx nx g @nx/angular:app my-app
+# Tests del motor de análisis
+pnpm nx test analyzer
+
+# Tests de todos los paquetes
+pnpm test
 ```
 
-### Generate a new Angular library:
+---
+
+## Reglas disponibles
+
+El motor analiza proyectos Angular aplicando las siguientes reglas:
+
+| ID | Descripción | Severidad |
+|----|-------------|-----------|
+| `no-circular-deps` | Detecta dependencias circulares entre módulos | 🔴 Alta |
+| `rxjs-unsubscribe` | Detecta subscripciones a Observables sin `ngOnDestroy` | 🔴 Alta |
+| `rxjs-nested-subscribe` | Detecta `.subscribe()` anidado dentro de otro `.subscribe()` | 🔴 Alta |
+| `missing-onpush` | Detecta componentes sin `ChangeDetectionStrategy.OnPush` | 🟡 Media |
+| `missing-lazy-loading` | Detecta rutas que deberían usar lazy loading y no lo hacen | 🟡 Media |
+| `high-cyclomatic-complexity` | Detecta métodos con complejidad ciclomática superior a 10 | 🟡 Media |
+| `large-bundle-import` | Detecta imports de librerías pesadas completas | 🟡 Media |
+
+Cada problema detectado incluye descripción, impacto en rendimiento o mantenibilidad, y sugerencia concreta de resolución.
+
+## Otras métricas interesantes, pero para v2:
+
+`missing-trackby` — usar *ngFor sin trackBy en listas grandes destroza el rendimiento
+`large-component` — componentes con demasiadas líneas (god components)
+`direct-dom-manipulation` — usar document.querySelector o ElementRef.nativeElement directamente en vez de el renderer de Angular
+`any-type-usage` — abuso de any en TypeScript, que anula el tipado fuerte
+`console-log-in-production` — console.log olvidados en código de producción
+
+---
+
+## Stack tecnológico
+
+| Tecnología | Para qué |
+|------------|----------|
+| Node.js LTS | Runtime principal |
+| TypeScript (strict) | Tipado fuerte en todo el monorepo |
+| pnpm + workspaces | Gestión de dependencias en monorepo |
+| Nx | Gestión de apps y libs, caché de builds |
+| ts-morph | Análisis de AST sobre código TypeScript/Angular |
+| Vitest | Tests unitarios del motor de análisis |
+| Git + GitHub | Control de versiones y base para CI/CD |
+
+---
+
+## Cómo funciona el motor
+
+El motor de análisis (`libs/analyzer`) sigue este flujo:
+
+1. Recibe el path de un proyecto Angular
+2. Carga todos los archivos TypeScript via `ts-morph` (análisis de AST)
+3. Ejecuta cada regla sobre el árbol de sintaxis
+4. Agrega los resultados, asigna severidad y ordena por prioridad
+5. Devuelve un `AnalysisResult` con todos los problemas detectados
+
+El análisis trabaja sobre el AST (Árbol de Sintaxis Abstracta), no sobre texto plano, lo que lo hace preciso y resistente a falsos positivos.
+
+---
+
+## Cómo funciona la capa de IA
+
+La capa de IA es opcional y se activa con el flag `--ai`. Todo corre en local con Ollama — ningún dato sale a internet.
+
+**El flujo completo:**
+
+1. El motor detecta un problema y genera un `Issue` con `ruleId`, `message`, `impact`, `suggestion`, etc.
+2. La CLI pasa ese `Issue` a `explainIssue()` en `ai.service.ts`
+3. `explainIssue()` construye un prompt con toda la información del problema y se lo envía a Ollama via HTTP a `localhost:11434`
+4. Ollama carga el modelo `llama3.2` localmente y genera la respuesta en JSON
+5. Zod valida que el JSON tiene la estructura esperada (`summary`, `whyItMatters`, `howToFix`, `codeExample`). Si el modelo devuelve algo inesperado, Zod lo rechaza y devuelve `null` — el análisis no se rompe
+
+**¿Por qué las explicaciones son diferentes para cada problema?**
+
+Porque el prompt cambia con cada `Issue`. Para `rxjs-unsubscribe` el modelo recibe un contexto completamente distinto que para `missing-onpush`. El modelo genera texto nuevo cada vez basándose en ese contexto — no tiene respuestas predefinidas.
+
+**Requisitos para usar `--ai`:**
+- Tener [Ollama](https://ollama.com) instalado
+- Haber descargado el modelo: `ollama pull llama3.2`
+- Ollama corriendo en segundo plano (se inicia automáticamente al instalar la app en macOS)
+
+----
+
+
+## Cómo funciona el backend
+
+El backend (`apps/api`) es un servidor Fastify que expone una API REST para lanzar análisis y consultar el historial. En v1 el historial se guarda en memoria — la persistencia con base de datos se añade en versiones posteriores.
+
+**Endpoints disponibles:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| `GET` | `/health` | Comprueba que el servidor está vivo |
+| `POST` | `/analyze` | Recibe un path, ejecuta el análisis y devuelve los resultados |
+| `GET` | `/analyses` | Lista el historial de análisis |
+| `GET` | `/analyses/:id` | Devuelve el detalle de un análisis concreto |
+
+**Ejemplo de uso:**
 
 ```bash
-npx nx g @nx/angular:lib my-lib
+# Lanzar un análisis
+curl -X POST http://localhost:3333/analyze \
+  -H "Content-Type: application/json" \
+  -d '{"projectPath": "/ruta/a/tu/proyecto-angular"}'
+
+# Lanzar un análisis con explicaciones de IA
+curl -X POST http://localhost:3333/analyze \
+  -H "Content-Type: application/json" \
+  -d '{"projectPath": "/ruta/a/tu/proyecto-angular", "withAI": true}'
 ```
 
-### Generate a new Angular component:
+**Arrancar el backend:**
 
 ```bash
-npx nx g @nx/angular:component my-component --project=my-lib
+pnpm nx serve api
 ```
 
-### Generate a new API library:
+---
+
+## Cómo funciona el frontend
+
+El dashboard web (`apps/web`) es una aplicación Angular con Signals que consume la API del backend. Permite lanzar análisis introduciendo el path del proyecto y visualiza los resultados agrupados por severidad.
+
+**Vistas disponibles:**
+
+| Ruta | Descripción |
+|------|-------------|
+| `/` | Dashboard principal — formulario de análisis y resultados |
+| `/analyses/:id` | Detalle de un análisis concreto |
+
+**Arrancar el frontend:**
 
 ```bash
-npx nx g @nx/node:lib my-api-lib
+pnpm nx serve web
 ```
 
-You can use `npx nx list` to see all available plugins and `npx nx list <plugin-name>` to see all generators for a specific plugin.
+Abre `http://localhost:4200` en el navegador.
 
-## Nx Cloud
+---
 
-Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
+## Cómo usar Angular Doctor completo
 
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+Para usar el stack completo necesitas tres terminales:
 
-## Install Nx Console
+**Terminal 1 — Backend:**
+```bash
+pnpm nx serve api
+```
 
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
+**Terminal 2 — Frontend:**
+```bash
+pnpm nx serve web
+```
 
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+**Terminal 3 — CLI (opcional):**
+```bash
+# Sin IA
+node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular
 
-## 🔗 Learn More
+# Con IA (requiere Ollama corriendo)
+node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular --ai
 
-- [Nx Documentation](https://nx.dev)
-- [Angular Monorepo Tutorial](https://nx.dev/getting-started/tutorials/angular-monorepo-tutorial)
-- [Module Boundaries](https://nx.dev/features/enforce-module-boundaries)
-- [Docker Integration](https://nx.dev/recipes/nx-release/release-docker-images)
-- [Playwright Testing](https://nx.dev/technologies/test-tools/playwright/introduction#e2e-testing)
-- [Vite with Angular](https://nx.dev/recipes/vite)
-- [Nx Cloud](https://nx.dev/ci/intro/why-nx-cloud)
-- [Releasing Packages](https://nx.dev/features/manage-releases)
-
-## 💬 Community
-
-Join the Nx community:
-
-- [Discord](https://go.nx.dev/community)
-- [X (Twitter)](https://twitter.com/nxdevtools)
-- [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [YouTube](https://www.youtube.com/@nxdevtools)
-- [Blog](https://nx.dev/blog)
+# Output en JSON
+node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular --json
+```
 
