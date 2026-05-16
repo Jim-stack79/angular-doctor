@@ -15,7 +15,7 @@ Herramienta de análisis estático para proyectos Angular. Detecta problemas de 
 | 2 | Motor de análisis + Tests | ✅ Completa |
 | 3 | Capa de IA | 🔜 Pendiente | ✅ Completa |
 | 4 | CLI | 🔜 Pendiente | ✅ Completa |
-| 5 | Backend SaaS | 🔜 Pendiente |
+| 5 | Backend SaaS | 🔜 Pendiente | ✅ Completa |
 | 6 | Frontend (dashboard web) | 🔜 Pendiente |
 | 7 | IA en la UI | 🔜 Pendiente |
 | 8 | CI/CD | 🔜 Pendiente |

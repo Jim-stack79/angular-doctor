@@ -1,0 +1,105 @@
+<div class="min-h-screen bg-gray-950 text-gray-100">
+
+    <!-- Header -->
+    <header class="border-b border-gray-800 px-8 py-6 flex items-center gap-4">
+      <a routerLink="/" class="text-gray-400 hover:text-white transition-colors text-sm">
+        ← Back
+      </a>
+      <h1 class="text-2xl font-bold text-white">Analysis Detail</h1>
+    </header>
+  
+    <main class="max-w-4xl mx-auto px-8 py-10">
+  
+      @if (loading()) {
+        <div class="text-center text-gray-400 py-20">Loading...</div>
+      }
+  
+      @if (error()) {
+        <div class="bg-red-900/30 border border-red-700 rounded-xl p-4 text-red-300">
+          {{ error() }}
+        </div>
+      }
+  
+      @if (result(); as r) {
+        <!-- Meta -->
+        <div class="bg-gray-900 border border-gray-800 rounded-xl p-6 mb-8">
+          <p class="text-gray-400 text-sm mb-1">
+            <span class="text-gray-500">Project:</span> {{ r.result.projectPath }}
+          </p>
+          <p class="text-gray-400 text-sm mb-1">
+            <span class="text-gray-500">Analyzed:</span> {{ r.result.analyzedAt }}
+          </p>
+          <p class="text-gray-400 text-sm">
+            <span class="text-gray-500">ID:</span> {{ r.id }}
+          </p>
+        </div>
+  
+        <!-- Summary -->
+        <div class="grid grid-cols-3 gap-4 mb-8">
+          <div class="bg-red-900/20 border border-red-800 rounded-xl p-4 text-center">
+            <div class="text-3xl font-bold text-red-400">{{ r.result.summary.high }}</div>
+            <div class="text-sm text-red-300 mt-1">High</div>
+          </div>
+          <div class="bg-yellow-900/20 border border-yellow-800 rounded-xl p-4 text-center">
+            <div class="text-3xl font-bold text-yellow-400">{{ r.result.summary.medium }}</div>
+            <div class="text-sm text-yellow-300 mt-1">Medium</div>
+          </div>
+          <div class="bg-blue-900/20 border border-blue-800 rounded-xl p-4 text-center">
+            <div class="text-3xl font-bold text-blue-400">{{ r.result.summary.low }}</div>
+            <div class="text-sm text-blue-300 mt-1">Low</div>
+          </div>
+        </div>
+  
+        <!-- Issues -->
+        <div class="space-y-3">
+          @for (issue of r.result.issues; track issue.ruleId + issue.filePath) {
+            <div class="bg-gray-900 border rounded-xl p-5"
+              [class.border-red-800]="issue.severity === 'high'"
+              [class.border-yellow-800]="issue.severity === 'medium'"
+              [class.border-blue-800]="issue.severity === 'low'">
+  
+              <div class="flex items-center gap-3 mb-2">
+                <span class="text-xs font-bold px-2 py-1 rounded uppercase"
+                  [class.bg-red-900]="issue.severity === 'high'"
+                  [class.text-red-300]="issue.severity === 'high'"
+                  [class.bg-yellow-900]="issue.severity === 'medium'"
+                  [class.text-yellow-300]="issue.severity === 'medium'"
+                  [class.bg-blue-900]="issue.severity === 'low'"
+                  [class.text-blue-300]="issue.severity === 'low'">
+                  {{ issue.severity }}
+                </span>
+                <code class="text-gray-400 text-sm">{{ issue.ruleId }}</code>
+              </div>
+  
+              <p class="text-white font-medium mb-1">{{ issue.message }}</p>
+              <p class="text-gray-500 text-xs mb-3">
+                {{ issue.filePath }}{{ issue.line ? ':' + issue.line : '' }}
+              </p>
+              <p class="text-gray-400 text-sm mb-1">
+                <span class="text-gray-500">Impact:</span> {{ issue.impact }}
+              </p>
+              <p class="text-gray-400 text-sm">
+                <span class="text-gray-500">Fix:</span> {{ issue.suggestion }}
+              </p>
+  
+              @if (issue.aiExplanation) {
+                <div class="mt-4 bg-gray-800 rounded-lg p-4 border border-gray-700">
+                  <p class="text-cyan-400 text-xs font-bold mb-2">🤖 AI Explanation</p>
+                  <p class="text-gray-300 text-sm mb-2">{{ issue.aiExplanation.summary }}</p>
+                  <p class="text-gray-400 text-sm mb-2">
+                    <span class="text-gray-500">Why it matters:</span> {{ issue.aiExplanation.whyItMatters }}
+                  </p>
+                  <p class="text-gray-400 text-sm">
+                    <span class="text-gray-500">How to fix:</span> {{ issue.aiExplanation.howToFix }}
+                  </p>
+                  @if (issue.aiExplanation.codeExample) {
+                    <pre class="mt-3 bg-gray-950 rounded p-3 text-xs text-gray-300 overflow-x-auto">{{ issue.aiExplanation.codeExample }}</pre>
+                  }
+                </div>
+              }
+            </div>
+          }
+        </div>
+      }
+    </main>
+  </div>

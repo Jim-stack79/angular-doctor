@@ -1,27 +1,24 @@
 # Nx Angular Repository
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+
 
 ✨ A repository showcasing key [Nx](https://nx.dev) features for Angular monorepos ✨
 🚀 If you haven't connected to Nx Cloud yet, [complete your setup here](https://cloud.nx.app/setup/connect-workspace/guide). Get faster builds with remote caching, distributed task execution, and self-healing CI. [See how your workspace can benefit](#nx-cloud).
+
 ## 📦 Project Overview
 
 This repository demonstrates a production-ready Angular monorepo with:
 
 - **2 Applications**
-
   - `shop` - Angular e-commerce application with product listings and detail views
   - `api` - Backend API with Docker support serving product data
-
 - **6 Libraries**
-
   - `@org/feature-products` - Product listing feature (Angular)
   - `@org/feature-product-detail` - Product detail feature (Angular)
   - `@org/data` - Data access layer for shop features
   - `@org/shared-ui` - Shared UI components
   - `@org/models` - Shared data models
   - `@org/products` - API product service library
-
 - **E2E Testing**
   - `shop-e2e` - Playwright tests for the shop application
 
@@ -180,6 +177,7 @@ This feature helps maintain a healthy CI pipeline by automatically detecting and
 
 This repository uses tags to enforce module boundaries:
 
+
 | Project            | Tags                         | Can Import From              |
 | ------------------ | ---------------------------- | ---------------------------- |
 | `shop`             | `scope:shop`                 | `scope:shop`, `scope:shared` |
@@ -187,6 +185,7 @@ This repository uses tags to enforce module boundaries:
 | `feature-products` | `scope:shop`, `type:feature` | `scope:shop`, `scope:shared` |
 | `data`             | `scope:shop`, `type:data`    | `scope:shared`               |
 | `models`           | `scope:shared`, `type:data`  | Nothing (base library)       |
+
 
 ## 📚 Useful Commands
 
@@ -280,3 +279,4 @@ Join the Nx community:
 - [LinkedIn](https://www.linkedin.com/company/nrwl)
 - [YouTube](https://www.youtube.com/@nxdevtools)
 - [Blog](https://nx.dev/blog)
+
