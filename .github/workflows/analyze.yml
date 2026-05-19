@@ -1,0 +1,60 @@
+name: Angular Doctor Analysis
+
+on:
+  pull_request:
+    branches: [main, develop]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  analyze:
+    name: Run Angular Doctor
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build CLI
+        run: pnpm nx build cli
+
+      - name: Run Angular Doctor
+        run: |
+          node dist/apps/cli/main.js analyze . --json > analysis-result.json || true
+
+      - name: Format comment
+        run: |
+          node .github/scripts/format-analysis-comment.mjs analysis-result.json > comment.md
+
+      - name: Post comment on PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: angular-doctor
+          path: comment.md
+
+      - name: Fail if HIGH severity issues
+        run: |
+          HIGH=$(node -e "
+            const r = require('./analysis-result.json');
+            const issues = r.issues || [];
+            console.log(issues.filter(i => i.severity === 'high').length);
+          ")
+          if [ "\$HIGH" -gt "0" ]; then
+            echo "❌ $HIGH high severity issue(s) found"
+            exit 1
+          fi
