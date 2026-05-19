@@ -19,7 +19,7 @@ Herramienta de análisis estático para proyectos Angular. Detecta problemas de 
 | 5    | Backend SaaS              | ✅ Completa   |
 | 6    | Frontend (dashboard web)  | ✅ Completa   |
 | 7    | IA en la UI               | ✅ Completa   |
-| 8    | CI/CD                     | 🔜 Pendiente |
+| 8    | CI/CD                     | ✅ Completa   |
 | 9    | Deploy                    | 🔜 Pendiente |
 | 10   | Observabilidad            | 🔜 Pendiente |
 | 11   | Documentación y demo      | 🔜 Pendiente |
@@ -211,6 +211,7 @@ pnpm nx serve web
 Abre `http://localhost:4200` en el navegador.
 
 ---
+
 ## Cómo funciona la IA en la UI (Fase 7)
 
 Cada issue detectado tiene un botón **"🤖 Explain this"** que solicita una explicación bajo demanda a la IA. La interacción es controlada — el usuario decide qué issues quiere que la IA explique, en lugar de procesar todos de golpe.
@@ -225,13 +226,13 @@ Cada issue detectado tiene un botón **"🤖 Explain this"** que solicita una ex
 Cada issue gestiona su propio estado de carga de forma independiente — puedes pedir explicaciones en paralelo sin que se bloqueen entre sí.
 
 **La explicación incluye:**
+
 - Resumen del problema en lenguaje natural
 - Por qué importa en producción
 - Cómo resolverlo paso a paso
 - Ejemplo de código antes/después (cuando aplica)
 
-**Nota sobre Vercel AI SDK:** El roadmap menciona Vercel AI SDK para gestionar streaming de respuestas. En v1 con Ollama local no es necesario — la latencia es mínima al correr en la misma máquina. Se añadirá cuando se migre a un LLM de producción (OpenAI / Anthropic) donde el streaming mejora significativamente la experiencia de usuario.
----
+## **Nota sobre Vercel AI SDK:** El roadmap menciona Vercel AI SDK para gestionar streaming de respuestas. En v1 con Ollama local no es necesario — la latencia es mínima al correr en la misma máquina. Se añadirá cuando se migre a un LLM de producción (OpenAI / Anthropic) donde el streaming mejora significativamente la experiencia de usuario.
 
 ## Cómo usar Angular Doctor completo
 
@@ -262,3 +263,37 @@ node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular --ai
 node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular --json
 ```
 
+
+
+Aquí tienes un resumen claro para el README:
+
+---
+
+## Fase 8 — CI/CD con GitHub Actions
+
+En esta fase se automatizó el proceso de validación del código mediante GitHub Actions. Cada vez que se hace un push a `develop` o se abre un Pull Request hacia `main`, el sistema ejecuta automáticamente una serie de comprobaciones para garantizar que el código es correcto antes de integrarlo.
+
+### Qué se ha configurado
+
+`ci.yml` — Pipeline principal de integración continua. Se dispara en cada push a `develop` y en PRs hacia `main` o `develop`. Instala dependencias con pnpm, instala los browsers de Playwright necesarios para los tests e2e, y ejecuta lint, build y tests usando `nx affected`, que solo procesa los proyectos que han cambiado respecto al commit anterior. Esto hace el CI rápido y eficiente en un monorepo.
+
+`main.yml` — Validación completa de la rama principal. Se dispara cuando se mergea código a `main`. A diferencia del CI, aquí se ejecuta `nx run-many --all` para buildear y testear absolutamente todo el proyecto, garantizando que `main` siempre está en un estado limpio y desplegable.
+
+### Decisiones tomadas
+
+- **Sin feature branches por ahora** — al ser un proyecto personal, se trabaja directamente en `develop` y se mergea a `main` cuando una fase está completa. Los workflows están preparados para soportar feature branches en el futuro sin cambios.
+
+- `analyze.yml` **descartado** — el workflow que ejecutaba Angular Doctor sobre el propio repositorio se eliminó porque Angular Doctor analiza proyectos Angular externos, no el monorepo en sí mismo.  
+
+- **Repo privado** — se añadieron los permisos `contents: read` y `actions: read` necesarios para que GitHub Actions pueda acceder al código y al historial de commits.
+
+### Problemas resueltos durante la configuración
+
+- Campo `packages` faltante en `pnpm-workspace.yaml`
+- Browsers de Playwright no disponibles en el runner → se instalan con `playwright install --with-deps`
+- Test e2e placeholder generado por Nx buscaba `"Welcome"` en lugar de `"Angular Doctor"`
+- `.pnpm-store/` se coló en el repositorio → añadido al `.gitignore`
+
+---
+
+¿Lo ves bien o quieres ajustar el tono o el nivel de detalle?
