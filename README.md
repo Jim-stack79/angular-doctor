@@ -8,20 +8,22 @@ Herramienta de análisis estático para proyectos Angular. Detecta problemas de 
 
 ## Estado actual
 
-| Fase | Descripción | Estado |
-|------|-------------|--------|
-| 0 | Entorno base | ✅ Completa |
-| 1 | Estructura del monorepo | ✅ Completa |
-| 2 | Motor de análisis + Tests | ✅ Completa |
-| 3 | Capa de IA | ✅ Completa |
-| 4 | CLI | ✅ Completa |
-| 5 | Backend SaaS | ✅ Completa |
-| 6 | Frontend (dashboard web) | ✅ Completa |
-| 7 | IA en la UI | 🔜 Pendiente |
-| 8 | CI/CD | 🔜 Pendiente |
-| 9 | Deploy | 🔜 Pendiente |
-| 10 | Observabilidad | 🔜 Pendiente |
-| 11 | Documentación y demo | 🔜 Pendiente |
+
+| Fase | Descripción               | Estado       |
+| ---- | ------------------------- | ------------ |
+| 0    | Entorno base              | ✅ Completa   |
+| 1    | Estructura del monorepo   | ✅ Completa   |
+| 2    | Motor de análisis + Tests | ✅ Completa   |
+| 3    | Capa de IA                | ✅ Completa   |
+| 4    | CLI                       | ✅ Completa   |
+| 5    | Backend SaaS              | ✅ Completa   |
+| 6    | Frontend (dashboard web)  | ✅ Completa   |
+| 7    | IA en la UI               | ✅ Completa   |
+| 8    | CI/CD                     | 🔜 Pendiente |
+| 9    | Deploy                    | 🔜 Pendiente |
+| 10   | Observabilidad            | 🔜 Pendiente |
+| 11   | Documentación y demo      | 🔜 Pendiente |
+
 
 ---
 
@@ -72,15 +74,17 @@ pnpm test
 
 El motor analiza proyectos Angular aplicando las siguientes reglas:
 
-| ID | Descripción | Severidad |
-|----|-------------|-----------|
-| `no-circular-deps` | Detecta dependencias circulares entre módulos | 🔴 Alta |
-| `rxjs-unsubscribe` | Detecta subscripciones a Observables sin `ngOnDestroy` | 🔴 Alta |
-| `rxjs-nested-subscribe` | Detecta `.subscribe()` anidado dentro de otro `.subscribe()` | 🔴 Alta |
-| `missing-onpush` | Detecta componentes sin `ChangeDetectionStrategy.OnPush` | 🟡 Media |
-| `missing-lazy-loading` | Detecta rutas que deberían usar lazy loading y no lo hacen | 🟡 Media |
-| `high-cyclomatic-complexity` | Detecta métodos con complejidad ciclomática superior a 10 | 🟡 Media |
-| `large-bundle-import` | Detecta imports de librerías pesadas completas | 🟡 Media |
+
+| ID                           | Descripción                                                  | Severidad |
+| ---------------------------- | ------------------------------------------------------------ | --------- |
+| `no-circular-deps`           | Detecta dependencias circulares entre módulos                | 🔴 Alta   |
+| `rxjs-unsubscribe`           | Detecta subscripciones a Observables sin `ngOnDestroy`       | 🔴 Alta   |
+| `rxjs-nested-subscribe`      | Detecta `.subscribe()` anidado dentro de otro `.subscribe()` | 🔴 Alta   |
+| `missing-onpush`             | Detecta componentes sin `ChangeDetectionStrategy.OnPush`     | 🟡 Media  |
+| `missing-lazy-loading`       | Detecta rutas que deberían usar lazy loading y no lo hacen   | 🟡 Media  |
+| `high-cyclomatic-complexity` | Detecta métodos con complejidad ciclomática superior a 10    | 🟡 Media  |
+| `large-bundle-import`        | Detecta imports de librerías pesadas completas               | 🟡 Media  |
+
 
 Cada problema detectado incluye descripción, impacto en rendimiento o mantenibilidad, y sugerencia concreta de resolución.
 
@@ -96,15 +100,17 @@ Cada problema detectado incluye descripción, impacto en rendimiento o mantenibi
 
 ## Stack tecnológico
 
-| Tecnología | Para qué |
-|------------|----------|
-| Node.js LTS | Runtime principal |
-| TypeScript (strict) | Tipado fuerte en todo el monorepo |
-| pnpm + workspaces | Gestión de dependencias en monorepo |
-| Nx | Gestión de apps y libs, caché de builds |
-| ts-morph | Análisis de AST sobre código TypeScript/Angular |
-| Vitest | Tests unitarios del motor de análisis |
-| Git + GitHub | Control de versiones y base para CI/CD |
+
+| Tecnología          | Para qué                                        |
+| ------------------- | ----------------------------------------------- |
+| Node.js LTS         | Runtime principal                               |
+| TypeScript (strict) | Tipado fuerte en todo el monorepo               |
+| pnpm + workspaces   | Gestión de dependencias en monorepo             |
+| Nx                  | Gestión de apps y libs, caché de builds         |
+| ts-morph            | Análisis de AST sobre código TypeScript/Angular |
+| Vitest              | Tests unitarios del motor de análisis           |
+| Git + GitHub        | Control de versiones y base para CI/CD          |
+
 
 ---
 
@@ -139,12 +145,12 @@ La capa de IA es opcional y se activa con el flag `--ai`. Todo corre en local co
 Porque el prompt cambia con cada `Issue`. Para `rxjs-unsubscribe` el modelo recibe un contexto completamente distinto que para `missing-onpush`. El modelo genera texto nuevo cada vez basándose en ese contexto — no tiene respuestas predefinidas.
 
 **Requisitos para usar `--ai`:**
+
 - Tener [Ollama](https://ollama.com) instalado
 - Haber descargado el modelo: `ollama pull llama3.2`
 - Ollama corriendo en segundo plano (se inicia automáticamente al instalar la app en macOS)
 
-----
-
+---
 
 ## Cómo funciona el backend
 
@@ -152,12 +158,14 @@ El backend (`apps/api`) es un servidor Fastify que expone una API REST para lanz
 
 **Endpoints disponibles:**
 
-| Método | Ruta | Descripción |
-|--------|------|-------------|
-| `GET` | `/health` | Comprueba que el servidor está vivo |
-| `POST` | `/analyze` | Recibe un path, ejecuta el análisis y devuelve los resultados |
-| `GET` | `/analyses` | Lista el historial de análisis |
-| `GET` | `/analyses/:id` | Devuelve el detalle de un análisis concreto |
+
+| Método | Ruta            | Descripción                                                   |
+| ------ | --------------- | ------------------------------------------------------------- |
+| `GET`  | `/health`       | Comprueba que el servidor está vivo                           |
+| `POST` | `/analyze`      | Recibe un path, ejecuta el análisis y devuelve los resultados |
+| `GET`  | `/analyses`     | Lista el historial de análisis                                |
+| `GET`  | `/analyses/:id` | Devuelve el detalle de un análisis concreto                   |
+
 
 **Ejemplo de uso:**
 
@@ -187,10 +195,12 @@ El dashboard web (`apps/web`) es una aplicación Angular con Signals que consume
 
 **Vistas disponibles:**
 
-| Ruta | Descripción |
-|------|-------------|
-| `/` | Dashboard principal — formulario de análisis y resultados |
-| `/analyses/:id` | Detalle de un análisis concreto |
+
+| Ruta            | Descripción                                               |
+| --------------- | --------------------------------------------------------- |
+| `/`             | Dashboard principal — formulario de análisis y resultados |
+| `/analyses/:id` | Detalle de un análisis concreto                           |
+
 
 **Arrancar el frontend:**
 
@@ -201,22 +211,46 @@ pnpm nx serve web
 Abre `http://localhost:4200` en el navegador.
 
 ---
+## Cómo funciona la IA en la UI (Fase 7)
+
+Cada issue detectado tiene un botón **"🤖 Explain this"** que solicita una explicación bajo demanda a la IA. La interacción es controlada — el usuario decide qué issues quiere que la IA explique, en lugar de procesar todos de golpe.
+
+**Flujo:**
+
+1. El usuario pulsa "Explain this" en un issue concreto
+2. El frontend envía el issue al endpoint `POST /explain` del backend
+3. El backend llama a Ollama con un prompt contextualizado
+4. La explicación aparece directamente en la tarjeta del issue
+
+Cada issue gestiona su propio estado de carga de forma independiente — puedes pedir explicaciones en paralelo sin que se bloqueen entre sí.
+
+**La explicación incluye:**
+- Resumen del problema en lenguaje natural
+- Por qué importa en producción
+- Cómo resolverlo paso a paso
+- Ejemplo de código antes/después (cuando aplica)
+
+**Nota sobre Vercel AI SDK:** El roadmap menciona Vercel AI SDK para gestionar streaming de respuestas. En v1 con Ollama local no es necesario — la latencia es mínima al correr en la misma máquina. Se añadirá cuando se migre a un LLM de producción (OpenAI / Anthropic) donde el streaming mejora significativamente la experiencia de usuario.
+---
 
 ## Cómo usar Angular Doctor completo
 
 Para usar el stack completo necesitas tres terminales:
 
 **Terminal 1 — Backend:**
+
 ```bash
 pnpm nx serve api
 ```
 
 **Terminal 2 — Frontend:**
+
 ```bash
 pnpm nx serve web
 ```
 
 **Terminal 3 — CLI (opcional):**
+
 ```bash
 # Sin IA
 node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular

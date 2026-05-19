@@ -1,5 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { AnalysisService } from './analysis.service';
+import { explainIssue } from '@myorg/analyzer';
+import type { Issue } from '@myorg/analyzer';
 
 const analysisService = new AnalysisService();
 
@@ -47,4 +49,34 @@ export function registerRoutes(server: FastifyInstance): void {
     }
     return result;
   });
+
+
+  server.post<{ Body: { issue: unknown } }>(
+    '/explain',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['issue'],
+          properties: {
+            issue: { type: 'object' },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      try {
+        const { issue } = request.body;
+        const explanation = await explainIssue(issue as Issue);
+        if (!explanation) {
+          return reply.status(500).send({ error: 'AI explanation failed' });
+        }
+        return reply.send(explanation);
+      } catch (err) {
+        return reply.status(500).send({ error: (err as Error).message });
+      }
+    }
+  );
+
+
 }

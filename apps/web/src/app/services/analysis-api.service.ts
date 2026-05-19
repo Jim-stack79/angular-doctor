@@ -61,4 +61,20 @@ export class AnalysisApiService {
     if (!response.ok) throw new Error('Analysis not found');
     return response.json() as Promise<AnalysisResult>;
   }
+
+  async explainIssue(issue: Issue): Promise<{
+    summary: string;
+    whyItMatters: string;
+    howToFix: string;
+    codeExample?: string;
+  }> {
+    const response = await fetch(`${API_URL}/explain`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ issue }),
+    });
+  
+    if (!response.ok) throw new Error('AI explanation failed');
+    return response.json();
+  }
 }
