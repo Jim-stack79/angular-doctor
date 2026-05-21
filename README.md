@@ -21,13 +21,13 @@ Herramienta de análisis estático para proyectos Angular. Detecta problemas de 
 | 7    | IA en la UI               | ✅ Completa   |
 | 8    | CI/CD                     | ✅ Completa   |
 | 9    | Deploy                    | 🔜 Pendiente |
-| 10   | Observabilidad            | 🔜 Pendiente |
+| 10   | Observabilidad            | ✅ Completa   |
 | 11   | Documentación y demo      | 🔜 Pendiente |
 
 
 ---
 
-## Estructura del monorepo
+## Fase 1 - Estructura del monorepo
 
 ```
 angular-doctor/
@@ -114,7 +114,7 @@ Cada problema detectado incluye descripción, impacto en rendimiento o mantenibi
 
 ---
 
-## Cómo funciona el motor
+## Fase 2 - Cómo funciona el motor de análisis
 
 El motor de análisis (`libs/analyzer`) sigue este flujo:
 
@@ -128,7 +128,7 @@ El análisis trabaja sobre el AST (Árbol de Sintaxis Abstracta), no sobre texto
 
 ---
 
-## Cómo funciona la capa de IA
+## Fase 3 - Cómo funciona la capa de IA
 
 La capa de IA es opcional y se activa con el flag `--ai`. Todo corre en local con Ollama — ningún dato sale a internet.
 
@@ -152,7 +152,73 @@ Porque el prompt cambia con cada `Issue`. Para `rxjs-unsubscribe` el modelo reci
 
 ---
 
-## Cómo funciona el backend
+## Fase 4 - Cómo funciona el CLI
+
+
+
+```markdown
+## Cómo funciona la CLI (Fase 4)
+
+La CLI permite analizar un proyecto Angular directamente desde la terminal sin necesidad de abrir el dashboard web. Se ejecuta apuntando al path del proyecto y muestra los resultados en consola con colores.
+
+**Uso básico:**
+
+```bash
+# Primero buildamos la CLI
+pnpm nx build cli
+
+# Análisis básico
+node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular
+
+# Con explicaciones de IA (requiere Ollama corriendo)
+node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular --ai
+
+# Output en formato JSON
+node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular --json
+
+```
+
+**Ejemplo de output en consola:**
+
+```
+✔ Analysis complete — 7 issues found
+
+Angular Doctor — Analysis Report
+/ruta/a/tu/proyecto-angular
+────────────────────────────────────────────────────────────
+
+● HIGH (2)
+  [rxjs-unsubscribe] Component "BadComponent" uses .subscribe() but does not implement ngOnDestroy
+  File: src/app/bad.component.ts:6
+  Impact: Active subscriptions after component destruction cause memory leaks
+  Fix: Implement ngOnDestroy and call unsubscribe(), or use takeUntilDestroyed()
+
+● MEDIUM (5)
+  [missing-onpush] Component "App" does not use ChangeDetectionStrategy.OnPush
+  ...
+
+────────────────────────────────────────────────────────────
+Summary: 2 high  5 medium  0 low
+
+```
+
+**Flags disponibles:**
+
+
+| Flag     | Descripción                                                                  |
+| -------- | ---------------------------------------------------------------------------- |
+| `--ai`   | Enriquece cada issue con explicaciones generadas por Ollama                  |
+| `--json` | Devuelve el resultado completo en formato JSON en lugar del output coloreado |
+
+
+**Arquitectura interna:**
+
+- `main.ts` — punto de entrada, registra los comandos con `commander`
+- `commands/analyze.ts` — lógica del comando `analyze`: llama al motor, muestra el spinner con `ora`, pinta el output con `chalk`
+
+
+
+## Fase 5 - Cómo funciona el backend
 
 El backend (`apps/api`) es un servidor Fastify que expone una API REST para lanzar análisis y consultar el historial. En v1 el historial se guarda en memoria — la persistencia con base de datos se añade en versiones posteriores.
 
@@ -189,7 +255,7 @@ pnpm nx serve api
 
 ---
 
-## Cómo funciona el frontend
+## Fase 6 - Cómo funciona el frontend
 
 El dashboard web (`apps/web`) es una aplicación Angular con Signals que consume la API del backend. Permite lanzar análisis introduciendo el path del proyecto y visualiza los resultados agrupados por severidad.
 
@@ -212,7 +278,7 @@ Abre `http://localhost:4200` en el navegador.
 
 ---
 
-## Cómo funciona la IA en la UI (Fase 7)
+## Fase 7 - Cómo funciona la IA en la UI
 
 Cada issue detectado tiene un botón **"🤖 Explain this"** que solicita una explicación bajo demanda a la IA. La interacción es controlada — el usuario decide qué issues quiere que la IA explique, en lugar de procesar todos de golpe.
 
@@ -263,8 +329,6 @@ node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular --ai
 node dist/apps/cli/main.js analyze /ruta/a/tu/proyecto-angular --json
 ```
 
-
-
 Aquí tienes un resumen claro para el README:
 
 ---
@@ -282,9 +346,7 @@ En esta fase se automatizó el proceso de validación del código mediante GitHu
 ### Decisiones tomadas
 
 - **Sin feature branches por ahora** — al ser un proyecto personal, se trabaja directamente en `develop` y se mergea a `main` cuando una fase está completa. Los workflows están preparados para soportar feature branches en el futuro sin cambios.
-
 - `analyze.yml` **descartado** — el workflow que ejecutaba Angular Doctor sobre el propio repositorio se eliminó porque Angular Doctor analiza proyectos Angular externos, no el monorepo en sí mismo.  
-
 - **Repo privado** — se añadieron los permisos `contents: read` y `actions: read` necesarios para que GitHub Actions pueda acceder al código y al historial de commits.
 
 ### Problemas resueltos durante la configuración
@@ -294,6 +356,68 @@ En esta fase se automatizó el proceso de validación del código mediante GitHu
 - Test e2e placeholder generado por Nx buscaba `"Welcome"` en lugar de `"Angular Doctor"`
 - `.pnpm-store/` se coló en el repositorio → añadido al `.gitignore`
 
+
+
+
+
+Aquí tienes el texto listo para el README:
+
 ---
 
-¿Lo ves bien o quieres ajustar el tono o el nivel de detalle?
+## Fase 10 — Observabilidad (parcial): Logs estructurados con Pino
+
+En esta fase se añadió logging estructurado al servidor Fastify usando Pino, la librería de logging más rápida del ecosistema Node.js.
+
+### Por qué Pino y no console.log
+
+`console.log` produce texto plano sin estructura, difícil de filtrar y de leer en producción. Pino escribe logs en formato JSON con nivel de severidad, timestamp y datos contextuales, lo que permite trazabilidad real de lo que ocurre en el servidor.
+
+### Qué se ha configurado
+
+En desarrollo los logs salen formateados con colores y timestamps legibles gracias a `pino-pretty`. En producción saldrían en JSON puro, que es el formato que esperan plataformas como Railway o Render para mostrarlos en sus dashboards.
+
+### Qué se loguea
+
+Cada petición al servidor genera automáticamente logs de entrada y salida con su `reqId` único, método, url, status code y tiempo de respuesta. Además, en cada endpoint se añaden logs específicos:
+
+- `/analyze` — projectPath, si se solicitó IA, número de issues encontrados y duración en ms
+- `/explain` — issue analizado y duración de la llamada a la IA
+- `/analyses` y `/analyses/:id` — accesos y casos de not found
+- `/health` — debug silencioso, no contamina los logs en producción
+
+### Ejemplo de output en desarrollo
+
+```
+[2026-05-21 19:38:35.316 +0200] INFO: Server ready
+    host: "localhost"
+    port: 3333
+
+[2026-05-21 19:38:52.086 +0200] INFO: Analysis requested
+    reqId: "req-2"
+    projectPath: "/Users/jaime/Workspace/test-angular-app"
+    withAI: false
+
+[2026-05-21 19:38:52.230 +0200] INFO: Analysis complete
+    reqId: "req-2"
+    projectPath: "/Users/jaime/Workspace/test-angular-app"
+    issuesFound: 7
+    duration: 144
+
+[2026-05-21 19:38:52.231 +0200] INFO: request completed
+    reqId: "req-2"
+    res: { "statusCode": 200 }
+    responseTime: 146.42
+
+```
+
+### Dependencias añadidas
+
+- `pino` — logger principal
+- `pino-pretty` — formateo visual para desarrollo (devDependency)
+
+### Nota
+
+Sentry y PostHog, también mencionados en esta fase del roadmap, tienen sentido cuando el proyecto esté desplegado en producción con usuarios reales. Se añadirán en la Fase 9 cuando se aborde el deploy.
+
+---
+
