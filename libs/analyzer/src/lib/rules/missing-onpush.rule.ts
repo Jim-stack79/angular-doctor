@@ -1,4 +1,3 @@
-import { SyntaxKind } from 'ts-morph';
 import { Rule, RuleContext } from './rule.interface';
 import { Issue } from '../types';
 
