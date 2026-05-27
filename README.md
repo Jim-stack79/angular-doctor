@@ -266,3 +266,6 @@ Rules pending implementation:
 - `any-type-usage` — overuse of `any` that defeats strong typing
 - `console-log-in-production` — forgotten `console.log` calls in production code
 
+
+
+→ [How to add a new rule](./docs/[adding-rules.md](http://adding-rules.md))
