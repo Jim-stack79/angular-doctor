@@ -1,4 +1,4 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { AnalysisApiService, AnalysisResult, Issue } from '../../services/analysis-api.service';
@@ -8,8 +8,10 @@ import { AnalysisApiService, AnalysisResult, Issue } from '../../services/analys
   imports: [FormsModule, RouterModule],
   templateUrl: './dashboard.component.html',
 })
-export class DashboardComponent {
+export class DashboardComponent implements OnInit {
   private api = inject(AnalysisApiService);
+  private readonly lastProjectPathKey = 'dashboard:lastProjectPath';
+  private readonly hasResultsKey = 'dashboard:hasResults';
 
   projectPath = signal('');
   loading = signal(false);
@@ -19,6 +21,19 @@ export class DashboardComponent {
   // Estado de IA por issue: key = ruleId+filePath, value = 'idle' | 'loading' | 'done'
   aiLoadingMap = signal<Record<string, 'idle' | 'loading' | 'done'>>({});
   aiExplanations = signal<Record<string, Issue['aiExplanation']>>({});
+
+  ngOnInit() {
+    const savedProjectPath = this.readStorage(this.lastProjectPathKey);
+    const hadResults = this.readStorage(this.hasResultsKey) === 'true';
+
+    if (savedProjectPath) {
+      this.projectPath.set(savedProjectPath);
+    }
+
+    if (savedProjectPath && hadResults) {
+      void this.analyze();
+    }
+  }
 
   async analyze() {
     if (!this.projectPath()) return;
@@ -32,6 +47,8 @@ export class DashboardComponent {
     try {
       const result = await this.api.analyze(this.projectPath());
       this.result.set(result);
+      this.writeStorage(this.lastProjectPathKey, this.projectPath());
+      this.writeStorage(this.hasResultsKey, 'true');
     } catch (err) {
       this.error.set((err as Error).message);
     } finally {
@@ -46,6 +63,8 @@ export class DashboardComponent {
     this.loading.set(false);
     this.aiLoadingMap.set({});
     this.aiExplanations.set({});
+    this.removeStorage(this.lastProjectPathKey);
+    this.removeStorage(this.hasResultsKey);
   }
 
   issueKey(issue: Issue): string {
@@ -71,5 +90,29 @@ export class DashboardComponent {
 
   getAIExplanation(issue: Issue) {
     return this.aiExplanations()[this.issueKey(issue)];
+  }
+
+  private readStorage(key: string): string | null {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  }
+
+  private writeStorage(key: string, value: string) {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // Ignore storage errors (private mode, blocked storage, etc.)
+    }
+  }
+
+  private removeStorage(key: string) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Ignore storage errors (private mode, blocked storage, etc.)
+    }
   }
 }
