@@ -6,6 +6,10 @@ Static analysis tool for Angular projects. Automatically detects performance iss
 
 ---
 
+
+
+![Angular Doctor demo](./docs/assets/demo.gif)
+
 ## Why this project exists
 
 I have over 15 years of experience as a Software Engineer specialised in Angular. I'm good at what I do, but I was aware that I was falling behind on everything related to AI: how to use it as a development tool, how to integrate it into real products, how to build with it instead of ignoring it.
@@ -265,7 +269,5 @@ Rules pending implementation:
 - `direct-dom-manipulation` — use of `document.querySelector` or `ElementRef.nativeElement`
 - `any-type-usage` — overuse of `any` that defeats strong typing
 - `console-log-in-production` — forgotten `console.log` calls in production code
-
-
 
 → [How to add a new rule](./docs/[adding-rules.md](http://adding-rules.md))
