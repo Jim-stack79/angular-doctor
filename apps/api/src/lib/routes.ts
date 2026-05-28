@@ -26,7 +26,8 @@ export function registerRoutes(server: FastifyInstance): void {
       },
     },
     async (request, reply) => {
-      const { projectPath, withAI = false } = request.body;
+      const { projectPath: rawPath, withAI = false } = request.body;
+      const projectPath = rawPath.trim();
 
       request.log.info({ projectPath, withAI }, 'Analysis requested');
       const start = Date.now();
