@@ -123,7 +123,7 @@ Each issue returned by a rule must follow this structure:
 | Field        | Type     | Description                                         |
 | ------------ | -------- | --------------------------------------------------- |
 | `ruleId`     | `string` | Must match the rule's `id` field                    |
-| `severity`   | `string` | Level of severity of the issue                      |
+| `severity`   | `string` | `'high'`, `'medium'` or `'low'`                     |
 | `message`    | `string` | Specific description of the problem found           |
 | `filePath`   | `string` | Absolute path to the file where the issue was found |
 | `line`       | `number` | Line number where the issue starts                  |
