@@ -39,6 +39,15 @@ export class DashboardComponent {
     }
   }
 
+  resetDashboard() {
+    this.projectPath.set('');
+    this.error.set(null);
+    this.result.set(null);
+    this.loading.set(false);
+    this.aiLoadingMap.set({});
+    this.aiExplanations.set({});
+  }
+
   issueKey(issue: Issue): string {
     return issue.ruleId + issue.filePath;
   }

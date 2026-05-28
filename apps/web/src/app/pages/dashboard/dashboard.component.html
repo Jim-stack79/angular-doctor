@@ -2,7 +2,15 @@
 
   <!-- Header -->
   <header class="border-b border-gray-800 px-8 py-6 flex flex-col items-center text-center">
-    <h1 class="text-2xl font-bold text-white">Angular Doctor</h1>
+    <h1>
+      <button
+        type="button"
+        (click)="resetDashboard()"
+        class="text-2xl font-bold text-white hover:text-blue-400 transition-colors"
+      >
+        Angular Doctor
+      </button>
+    </h1>
     <p class="text-gray-400 text-sm mt-1">
       Analyze your Angular project for issues
     </p>
