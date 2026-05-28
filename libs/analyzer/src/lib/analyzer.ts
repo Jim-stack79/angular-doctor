@@ -8,6 +8,7 @@ import { highCyclomaticComplexityRule } from './rules/high-cyclomatic-complexity
 import { rxjsUnsubscribeRule } from './rules/rxjs-unsubscribe.rule';
 import { rxjsNestedSubscribeRule } from './rules/rxjs-nested-subscribe.rule';
 import { largeBundleImportRule } from './rules/large-bundle-import.rule';
+import { noAnyTypeRule } from './rules/no-any-type.rule';
 
 const RULES: Rule[] = [
   noCircularDepsRule,
@@ -17,6 +18,7 @@ const RULES: Rule[] = [
   missingOnPushRule,
   missingLazyLoadingRule,
   highCyclomaticComplexityRule,
+  noAnyTypeRule
 ];
 
 const SEVERITY_ORDER: Record<Severity, number> = {
