@@ -1,10 +1,18 @@
+// libs/analyzer/src/lib/rules/__tests__/missing-trackby.rule.spec.ts
+
 import { describe, it, expect } from 'vitest';
 import { Project } from 'ts-morph';
 import { missingTrackByRule } from '../missing-trackby.rule';
 
 function createContext(code: string) {
-  const project = new Project({ useInMemoryFileSystem: true });
-  const sourceFile = project.createSourceFile('test.component.ts', code);
+  const project = new Project({
+    useInMemoryFileSystem: true,
+  });
+
+  const sourceFile = project.createSourceFile(
+    'test.component.ts',
+    code
+  );
 
   return {
     project,
@@ -19,21 +27,25 @@ describe('missingTrackByRule', () => {
       import { Component } from '@angular/core';
 
       @Component({
-        selector: 'app-test',
+        selector: 'app-users',
         template: \`
-          <li *ngFor="let item of items">
-            {{ item.name }}
-          </li>
+          <ul>
+            <li *ngFor="let user of users">
+              {{ user.name }}
+            </li>
+          </ul>
         \`
       })
-      export class TestComponent {}
+      export class UsersComponent {
+        users = [];
+      }
     `);
 
     const issues = missingTrackByRule.run(context);
 
     expect(issues).toHaveLength(1);
     expect(issues[0].ruleId).toBe('missing-trackby');
-    expect(issues[0].severity).toBe('medium');
+    expect(issues[0].severity).toBe('high');
   });
 
   it('does not flag ngFor using trackBy', () => {
@@ -41,17 +53,93 @@ describe('missingTrackByRule', () => {
       import { Component } from '@angular/core';
 
       @Component({
-        selector: 'app-test',
+        selector: 'app-users',
         template: \`
-          <li *ngFor="let item of items; trackBy: trackById">
-            {{ item.name }}
+          <ul>
+            <li *ngFor="let user of users; trackBy: trackById">
+              {{ user.name }}
+            </li>
+          </ul>
+        \`
+      })
+      export class UsersComponent {
+        users = [];
+
+        trackById(index: number, user: any) {
+          return user.id;
+        }
+      }
+    `);
+
+    const issues = missingTrackByRule.run(context);
+
+    expect(issues).toHaveLength(0);
+  });
+
+  it('detects Angular 17 @for without track', () => {
+    const context = createContext(`
+      import { Component } from '@angular/core';
+
+      @Component({
+        selector: 'app-users',
+        template: \`
+          @for (user of users) {
+            <div>{{ user.name }}</div>
+          }
+        \`
+      })
+      export class UsersComponent {
+        users = [];
+      }
+    `);
+
+    const issues = missingTrackByRule.run(context);
+
+    expect(issues).toHaveLength(1);
+    expect(issues[0].ruleId).toBe('missing-trackby');
+    expect(issues[0].severity).toBe('high');
+  });
+
+  it('does not flag Angular 17 @for with track', () => {
+    const context = createContext(`
+      import { Component } from '@angular/core';
+
+      @Component({
+        selector: 'app-users',
+        template: \`
+          @for (user of users; track user.id) {
+            <div>{{ user.name }}</div>
+          }
+        \`
+      })
+      export class UsersComponent {
+        users = [];
+      }
+    `);
+
+    const issues = missingTrackByRule.run(context);
+
+    expect(issues).toHaveLength(0);
+  });
+
+  it('ignores readonly static collections', () => {
+    const context = createContext(`
+      import { Component } from '@angular/core';
+
+      @Component({
+        selector: 'app-statuses',
+        template: \`
+          <li *ngFor="let status of statuses">
+            {{ status }}
           </li>
         \`
       })
-      export class TestComponent {
-        trackById(index: number, item: any) {
-          return item.id;
-        }
+      export class StatusesComponent {
+        readonly statuses = [
+          'Pending',
+          'Approved',
+          'Rejected'
+        ];
       }
     `);
 
