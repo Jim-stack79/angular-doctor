@@ -9,6 +9,7 @@ import { rxjsUnsubscribeRule } from './rules/rxjs-unsubscribe.rule';
 import { rxjsNestedSubscribeRule } from './rules/rxjs-nested-subscribe.rule';
 import { largeBundleImportRule } from './rules/large-bundle-import.rule';
 import { noAnyTypeRule } from './rules/no-any-type.rule';
+import { missingTrackByRule } from './rules/missing-trackby.rule';
 
 const RULES: Rule[] = [
   noCircularDepsRule,
@@ -18,7 +19,8 @@ const RULES: Rule[] = [
   missingOnPushRule,
   missingLazyLoadingRule,
   highCyclomaticComplexityRule,
-  noAnyTypeRule
+  noAnyTypeRule,
+  missingTrackByRule
 ];
 
 const SEVERITY_ORDER: Record<Severity, number> = {
