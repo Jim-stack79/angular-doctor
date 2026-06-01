@@ -6,9 +6,7 @@ Static analysis tool for Angular projects. Automatically detects performance iss
 
 ---
 
-
-
-![Angular Doctor demo](./docs/assets/demo.gif)
+Angular Doctor demo
 
 ## Why this project exists
 
