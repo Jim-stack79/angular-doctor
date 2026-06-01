@@ -1,4 +1,4 @@
-import { SyntaxKind, CallExpression } from 'ts-morph';
+import { SyntaxKind } from 'ts-morph';
 import { Rule, RuleContext } from './rule.interface';
 import { Issue } from '../types';
 
