@@ -68,7 +68,7 @@ export class DashboardComponent implements OnInit {
   }
 
   issueKey(issue: Issue): string {
-    return issue.ruleId + issue.filePath;
+    return issue.ruleId + issue.filePath + issue.line;
   }
 
   async explainIssue(issue: Issue) {
