@@ -10,6 +10,8 @@ import { rxjsNestedSubscribeRule } from './rules/rxjs-nested-subscribe.rule';
 import { largeBundleImportRule } from './rules/large-bundle-import.rule';
 import { noAnyTypeRule } from './rules/no-any-type.rule';
 import { missingTrackByRule } from './rules/missing-trackby.rule';
+import { largeComponentRule } from './rules/large-component.rule';
+import { directDomManipulationRule } from './rules/direct-dom-manipulation.rule';
 
 const RULES: Rule[] = [
   noCircularDepsRule,
@@ -20,7 +22,9 @@ const RULES: Rule[] = [
   missingLazyLoadingRule,
   highCyclomaticComplexityRule,
   noAnyTypeRule,
-  missingTrackByRule
+  missingTrackByRule,
+  largeComponentRule,
+  directDomManipulationRule
 ];
 
 const SEVERITY_ORDER: Record<Severity, number> = {
