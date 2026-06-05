@@ -1,4 +1,4 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
 
 const API_URL = 'http://localhost:3333';
 
@@ -16,6 +16,13 @@ export interface Issue {
     howToFix: string;
     codeExample?: string;
   };
+}
+
+export type ChatRole = 'user' | 'assistant';
+
+export interface ChatMessage {
+  role: ChatRole;
+  content: string;
 }
 
 export interface AnalysisResult {
@@ -77,4 +84,27 @@ export class AnalysisApiService {
     if (!response.ok) throw new Error('AI explanation failed');
     return response.json();
   }
+
+
+  async chatWithIssue(
+    issue: Issue,
+    messages: ChatMessage[]
+  ): Promise<{ message: string }> {
+    const response = await fetch(`${API_URL}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        issue,
+        messages,
+      }),
+    });
+  
+    if (!response.ok) {
+      const error = await response.json() as { error: string };
+      throw new Error(error.error ?? 'AI chat failed');
+    }
+  
+    return response.json();
+  }
+  
 }

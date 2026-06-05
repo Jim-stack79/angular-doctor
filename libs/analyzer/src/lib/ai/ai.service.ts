@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { Issue, AIExplanation } from '../types';
+import type { Issue, AIExplanation, ChatMessage } from '../types';
+// import type { ChatMessage } from '../types';
 
 const OLLAMA_URL = 'http://localhost:11434/api/generate';
 const MODEL = 'llama3.2';
@@ -38,6 +39,62 @@ export async function explainIssue(issue: Issue): Promise<AIExplanation | null> 
   } catch {
     return null;
   }
+}
+
+export async function chatWithIssue(
+  issue: Issue,
+  messages: ChatMessage[]
+): Promise<{ message: string } | null> {
+  const prompt = buildChatPrompt(issue, messages);
+
+  try {
+    const response = await fetch(OLLAMA_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: MODEL,
+        prompt,
+        stream: false,
+        // 👇 IMPORTANTE: aquí NO forzamos JSON
+        // porque queremos texto libre conversacional
+      }),
+    });
+
+    if (!response.ok) return null;
+
+    const data = await response.json() as { response: string };
+
+    return {
+      message: data.response.trim(),
+    };
+  } catch {
+    return null;
+  }
+}
+
+export function buildChatPrompt(
+  issue: Issue,
+  messages: { role: 'user' | 'assistant'; content: string }[]
+): string {
+      return `
+    You are Angular Doctor.
+
+    You are helping debug an Angular static analysis issue.
+
+    ISSUE:
+    ${JSON.stringify(issue, null, 2)}
+
+    CONVERSATION:
+    ${messages
+        .map(m => `${m.role.toUpperCase()}: ${m.content}`)
+        .join('\n')}
+
+    INSTRUCTIONS:
+    - Answer ONLY the last user question.
+    - Be concise and practical.
+    - Focus on Angular best practices.
+    - If needed, reference Signals, RxJS, change detection, etc.
+    `.trim();
 }
 
 function buildPrompt(issue: Issue): string {

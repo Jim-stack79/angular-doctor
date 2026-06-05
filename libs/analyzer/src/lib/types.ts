@@ -36,3 +36,10 @@ export interface IssueWithAI extends Issue {
 export interface AnalysisResultWithAI extends Omit<AnalysisResult, 'issues'> {
   issues: IssueWithAI[];
 }
+
+export type ChatRole = 'user' | 'assistant';
+
+export interface ChatMessage {
+  role: ChatRole;
+  content: string;
+}

@@ -2,11 +2,12 @@ import { FastifyInstance } from 'fastify';
 import { AnalysisService } from './analysis.service';
 import { explainIssue } from '@myorg/analyzer';
 import type { Issue } from '@myorg/analyzer';
+import { chatWithIssue } from '@myorg/analyzer';
 
 const analysisService = new AnalysisService();
 
 export function registerRoutes(server: FastifyInstance): void {
-  server.get('/health', async (request, reply) => {
+  server.get('/health', async (request) => {
     request.log.debug('Health check requested');
     return { status: 'ok', timestamp: new Date().toISOString() };
   });
@@ -49,7 +50,7 @@ export function registerRoutes(server: FastifyInstance): void {
     }
   );
 
-  server.get('/analyses', async (request, reply) => {
+  server.get('/analyses', async (request) => {
     const analyses = analysisService.getAll();
     request.log.debug({ count: analyses.length }, 'Fetching all analyses');
     return analyses;
@@ -107,4 +108,66 @@ export function registerRoutes(server: FastifyInstance): void {
       }
     }
   );
+
+  server.post<{
+    Body: {
+      issue: unknown;
+      messages: { role: 'user' | 'assistant'; content: string }[];
+    };
+  }>(
+    '/chat',
+    {
+      schema: {
+        body: {
+          type: 'object',
+          required: ['issue', 'messages'],
+          properties: {
+            issue: { type: 'object' },
+            messages: {
+              type: 'array',
+              items: {
+                type: 'object',
+                required: ['role', 'content'],
+                properties: {
+                  role: { type: 'string' },
+                  content: { type: 'string' },
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { issue, messages } = request.body;
+  
+      request.log.info({ issue }, 'AI chat requested');
+      const start = Date.now();
+  
+      try {
+        const result = await chatWithIssue(
+          issue as Issue,
+          messages
+        );
+  
+        const duration = Date.now() - start;
+  
+        if (!result) {
+          request.log.warn({ issue, duration }, 'AI chat returned empty');
+          return reply.status(500).send({ error: 'AI chat failed' });
+        }
+  
+        request.log.info({ duration }, 'AI chat complete');
+  
+        return reply.send(result);
+      } catch (err) {
+        request.log.error({ issue, err }, 'AI chat failed');
+        return reply.status(500).send({
+          error: (err as Error).message,
+        });
+      }
+    }
+  );
+
+
 }

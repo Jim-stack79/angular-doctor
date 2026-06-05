@@ -1,7 +1,7 @@
 import { Component, signal, inject, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-import { AnalysisApiService, AnalysisResult, Issue } from '../../services/analysis-api.service';
+import { AnalysisApiService, AnalysisResult, Issue, ChatMessage } from '../../services/analysis-api.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -17,6 +17,7 @@ export class DashboardComponent implements OnInit {
   loading = signal(false);
   error = signal<string | null>(null);
   result = signal<AnalysisResult | null>(null);
+  readonly aiChats = signal<Record<string, ChatMessage[]>>({});
 
   // Estado de IA por issue: key = ruleId+filePath, value = 'idle' | 'loading' | 'done'
   aiLoadingMap = signal<Record<string, 'idle' | 'loading' | 'done'>>({});
@@ -115,4 +116,56 @@ export class DashboardComponent implements OnInit {
       // Ignore storage errors (private mode, blocked storage, etc.)
     }
   }
+
+  getChat(issue: Issue): ChatMessage[] {
+    const key = this.issueKey(issue);
+    return this.aiChats()[key] ?? [];
+  }
+
+  async addUserMessage(issue: Issue, content: string) {
+    const key = this.issueKey(issue);
+  
+    // 1. Guardar mensaje del usuario
+    const current: ChatMessage[] = this.aiChats()[key] ?? [];
+
+    this.aiChats.update(map => ({
+      ...map,
+      [key]: [
+        ...current,
+        {
+          role: 'user',
+          content
+        }
+      ]
+    }));
+  
+    // 2. Llamar a IA con historial completo
+    const updatedChat: ChatMessage[] = [
+      ...current,
+      {
+        role: 'user',
+        content
+      }
+    ];
+  
+    try {
+      const response = await this.api.chatWithIssue(issue, updatedChat);
+  
+      // 3. Añadir respuesta de la IA
+      this.aiChats.update(map => ({
+        ...map,
+        [key]: [
+          ...updatedChat,
+          {
+            role: 'assistant',
+            content: response.message
+          }
+        ]
+      }));
+  
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
 }

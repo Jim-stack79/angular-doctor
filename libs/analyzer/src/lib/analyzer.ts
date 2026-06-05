@@ -57,4 +57,5 @@ export async function analyzeProject(projectPath: string): Promise<AnalysisResul
       low: issues.filter((i) => i.severity === 'low').length,
     },
   };
+
 }
