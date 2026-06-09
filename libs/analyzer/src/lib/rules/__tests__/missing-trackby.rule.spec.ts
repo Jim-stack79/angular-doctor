@@ -1,5 +1,3 @@
-// libs/analyzer/src/lib/rules/__tests__/missing-trackby.rule.spec.ts
-
 import { describe, it, expect } from 'vitest';
 import { Project } from 'ts-morph';
 import { missingTrackByRule } from '../missing-trackby.rule';
