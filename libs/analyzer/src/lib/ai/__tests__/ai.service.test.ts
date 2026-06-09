@@ -178,3 +178,58 @@ describe('chatWithIssue', () => {
 
 
 });
+
+
+describe('buildPrompt', () => {
+  it('should include the issue message', () => {
+    const prompt = aiService.buildPrompt({
+      ruleId: 'missing-onpush',
+      severity: 'medium',
+      message: 'Component does not use OnPush',
+      filePath: 'app.component.ts',
+      impact: 'More change detection cycles',
+      suggestion: 'Use ChangeDetectionStrategy.OnPush',
+    } as any);
+
+    expect(prompt).toContain('Component does not use OnPush');
+  });
+  it('should include the rule id and severity', () => {
+    const prompt = aiService.buildPrompt({
+      ruleId: 'missing-onpush',
+      severity: 'medium',
+      message: 'Component does not use OnPush',
+      filePath: 'app.component.ts',
+      impact: 'More change detection cycles',
+      suggestion: 'Use ChangeDetectionStrategy.OnPush',
+    } as any);
+  
+    expect(prompt).toContain('missing-onpush');
+    expect(prompt).toContain('medium');
+  });
+  it('should instruct the model to return JSON only', () => {
+    const prompt = aiService.buildPrompt({
+      ruleId: 'missing-onpush',
+      severity: 'medium',
+      message: 'Component does not use OnPush',
+      filePath: 'app.component.ts',
+      impact: 'More change detection cycles',
+      suggestion: 'Use ChangeDetectionStrategy.OnPush',
+    } as any);
+  
+    expect(prompt).toContain('Respond ONLY with a valid JSON object');
+  });
+  it('should describe the expected response fields', () => {
+    const prompt = aiService.buildPrompt({
+      ruleId: 'missing-onpush',
+      severity: 'medium',
+      message: 'Component does not use OnPush',
+      filePath: 'app.component.ts',
+      impact: 'More change detection cycles',
+      suggestion: 'Use ChangeDetectionStrategy.OnPush',
+    } as any);
+  
+    expect(prompt).toContain('"summary"');
+    expect(prompt).toContain('"whyItMatters"');
+    expect(prompt).toContain('"howToFix"');
+  });
+});

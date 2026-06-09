@@ -73,7 +73,7 @@ export async function chatWithIssue(
 }
 
 
-function buildPrompt(issue: Issue): string {
+export function buildPrompt(issue: Issue): string {
   return `You are an Angular expert analyzing code quality issues.
 
     An automated tool detected the following issue:
