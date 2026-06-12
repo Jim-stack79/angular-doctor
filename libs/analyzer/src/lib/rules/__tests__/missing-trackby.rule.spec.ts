@@ -145,4 +145,43 @@ describe('missingTrackByRule', () => {
 
     expect(issues).toHaveLength(0);
   });
+
+  it('does not flag components without template', () => {
+    const context = createContext(`
+      import { Component } from '@angular/core';
+  
+      @Component({
+        selector: 'app-test'
+      })
+      export class TestComponent {}
+    `);
+  
+    const issues = missingTrackByRule.run(context);
+  
+    expect(issues).toHaveLength(0);
+  });
+  
+  it('uses medium severity for non-large collections', () => {
+    const context = createContext(`
+      import { Component } from '@angular/core';
+  
+      @Component({
+        selector: 'app-test',
+        template: \`
+          <li *ngFor="let item of countries">
+            {{ item }}
+          </li>
+        \`
+      })
+      export class TestComponent {
+        countries = [];
+      }
+    `);
+  
+    const issues = missingTrackByRule.run(context);
+  
+    expect(issues).toHaveLength(1);
+    expect(issues[0].severity).toBe('medium');
+  });
+
 });
