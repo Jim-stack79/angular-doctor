@@ -2,9 +2,9 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import { registerRoutes } from './routes';
 
-const isDevelopment = process.env['NODE_ENV'] !== 'production';
-
 export async function buildServer() {
+
+  const isDevelopment = process.env['NODE_ENV'] !== 'production';
 
   const server = Fastify({
   logger: isDevelopment
@@ -19,7 +19,7 @@ export async function buildServer() {
         },
       }
     : true,
-});
+   });
 
   await server.register(cors, { origin: '*' });
 
